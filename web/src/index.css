@@ -1,0 +1,510 @@
+:root {
+  --bg: #f4f5f7;
+  --panel: #ffffff;
+  --primary: #2563eb;
+  --primary-dark: #1d4ed8;
+  --text: #172b4d;
+  --muted: #6b778c;
+  --border: #dfe1e6;
+  --error-bg: #ffebe6;
+  --error-text: #bf2600;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  color: var(--muted);
+}
+
+/* ---- Auth (giris/kayit) ---- */
+.auth-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.auth-card {
+  background: var(--panel);
+  width: 100%;
+  max-width: 380px;
+  padding: 32px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-card h1 {
+  font-size: 22px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.auth-card label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  margin: 12px 0 6px;
+}
+
+.auth-card input {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+}
+
+.auth-card input:focus {
+  border-color: var(--primary);
+}
+
+.auth-card button {
+  margin-top: 20px;
+  padding: 11px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.auth-card button:hover {
+  background: var(--primary-dark);
+}
+
+.auth-card button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.switch {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.switch a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.error {
+  background: var(--error-bg);
+  color: var(--error-text);
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.success {
+  background: #e3fcef;
+  color: #006644;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+a.ghost-link {
+  border: 1px solid var(--border);
+  padding: 7px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: none;
+  color: var(--text);
+}
+
+a.ghost-link:hover {
+  background: var(--bg);
+}
+
+/* ---- Profil / ayarlar ---- */
+.settings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.settings-card {
+  background: var(--panel);
+  width: 100%;
+  max-width: 380px;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-card h2 {
+  font-size: 17px;
+  margin-bottom: 16px;
+}
+
+.settings-card label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  margin: 12px 0 6px;
+}
+
+.settings-card input {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+}
+
+.settings-card input:focus {
+  border-color: var(--primary);
+}
+
+.settings-card input:disabled {
+  background: var(--bg);
+  color: var(--muted);
+}
+
+.settings-card button {
+  margin-top: 18px;
+  padding: 10px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.settings-card button:hover {
+  background: var(--primary-dark);
+}
+
+.settings-card button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* ---- Genel sayfa + ust bar ---- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+}
+
+.topbar h1 {
+  font-size: 18px;
+}
+
+.user-box {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 14px;
+}
+
+button.ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  padding: 7px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+button.ghost:hover {
+  background: var(--bg);
+}
+
+.content {
+  padding: 32px 24px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* ---- Proje listesi ---- */
+.new-project {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  max-width: 420px;
+}
+
+.new-project input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+}
+
+.new-project input:focus {
+  border-color: var(--primary);
+}
+
+.new-project button {
+  padding: 10px 18px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.project-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  text-decoration: none;
+  color: var(--text);
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+
+.project-card:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.project-card h3 {
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+.project-card p {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ---- Kanban panosu ---- */
+.board-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.board-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.back {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.back:hover {
+  color: var(--primary);
+}
+
+.board {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 20px 24px;
+  overflow-x: auto;
+  flex: 1;
+}
+
+.column {
+  background: #ebecf0;
+  border-radius: 10px;
+  width: 280px;
+  flex-shrink: 0;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 120px);
+}
+
+.column-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px 10px;
+}
+
+.column-head h3 {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.count {
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 1px 8px;
+}
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+}
+
+.task-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  cursor: grab;
+  touch-action: none;
+}
+
+.task-card.dragging {
+  cursor: grabbing;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  transform: rotate(3deg);
+}
+
+.assignee {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.add-card-btn {
+  margin-top: 8px;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  text-align: left;
+  padding: 8px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.add-card-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--text);
+}
+
+.add-form,
+.add-column-form {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.add-form input,
+.add-column-form input {
+  padding: 9px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+}
+
+.add-form input:focus,
+.add-column-form input:focus {
+  border-color: var(--primary);
+}
+
+.add-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.add-actions button {
+  padding: 7px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--primary);
+  color: #fff;
+}
+
+.add-actions button.ghost {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+.add-column-btn {
+  background: rgba(255, 255, 255, 0.6);
+  border: none;
+  width: 280px;
+  flex-shrink: 0;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.add-column-btn:hover {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.add-column-form {
+  background: #ebecf0;
+  width: 280px;
+  flex-shrink: 0;
+  padding: 10px;
+  border-radius: 10px;
+  margin-top: 0;
+}

@@ -1,0 +1,19 @@
+# Bağımlılıklar
+node_modules/
+
+# Ortam değişkenleri (gizli anahtarlar - ASLA gönderilmez)
+.env
+*.local
+
+# Build çıktıları
+dist/
+build/
+
+# Proje brief belgesi (repoya dahil edilmiyor)
+PROJE 1 TRELLO CLONE.pdf
+
+# Editör ve işletim sistemi dosyaları
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
