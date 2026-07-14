@@ -1,6 +1,17 @@
 import { useState } from "react";
+import TaskLabels from "./TaskLabels.jsx";
+import TaskChecklist from "./TaskChecklist.jsx";
+import TaskComments from "./TaskComments.jsx";
 
-export default function TaskModal({ task, members, onClose, onSave, onDelete }) {
+export default function TaskModal({
+  task,
+  members,
+  projectLabels,
+  onClose,
+  onSave,
+  onDelete,
+  onChange,
+}) {
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description || "");
   const [priority, setPriority] = useState(task.priority || "MEDIUM");
@@ -74,6 +85,14 @@ export default function TaskModal({ task, members, onClose, onSave, onDelete }) 
             </option>
           ))}
         </select>
+
+        <TaskLabels
+          task={task}
+          projectLabels={projectLabels || []}
+          onChange={onChange}
+        />
+        <TaskChecklist taskId={task.id} onChange={onChange} />
+        <TaskComments taskId={task.id} onChange={onChange} />
 
         <div className="modal-actions">
           <button className="danger" onClick={() => onDelete(task.id)}>

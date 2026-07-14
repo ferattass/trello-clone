@@ -4,6 +4,9 @@ import Register from "./pages/Register.jsx";
 import Projects from "./pages/Projects.jsx";
 import Board from "./pages/Board.jsx";
 import Profile from "./pages/Profile.jsx";
+import Teams from "./pages/Teams.jsx";
+import TeamDetail from "./pages/TeamDetail.jsx";
+import Admin from "./pages/Admin.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 export default function App() {
@@ -32,6 +35,30 @@ export default function App() {
         element={
           <ProtectedRoute>
             <Profile />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/takimlar"
+        element={
+          <ProtectedRoute>
+            <Teams />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/takimlar/:id"
+        element={
+          <ProtectedRoute>
+            <TeamDetail />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute>
+            <Admin />
           </ProtectedRoute>
         }
       />

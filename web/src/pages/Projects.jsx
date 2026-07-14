@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import api from "../api/client.js";
+import NotificationBell from "../components/NotificationBell.jsx";
 
 
 export default function Projects() {
@@ -41,6 +42,15 @@ export default function Projects() {
       <header className="topbar">
         <h1>Projelerim</h1>
         <div className="user-box">
+          <NotificationBell />
+          <Link to="/takimlar" className="ghost-link">
+            Takımlar
+          </Link>
+          {user.role === "ADMIN" && (
+            <Link to="/admin" className="ghost-link">
+              Admin
+            </Link>
+          )}
           <span>{user.name}</span>
           <Link to="/profil" className="ghost-link">
             Profil

@@ -21,6 +21,7 @@ export default function Board() {
   const [projectName, setProjectName] = useState("");
   const [columns, setColumns] = useState([]);
   const [members, setMembers] = useState([]);
+  const [labels, setLabels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTask, setActiveTask] = useState(null);
   const [selectedTask, setSelectedTask] = useState(null);
@@ -32,9 +33,18 @@ export default function Board() {
 
   const load = async () => {
     const res = await api.get(`/projects/${id}`);
-    setProjectName(res.data.project.name);
-    setColumns(res.data.project.columns);
-    setMembers(res.data.project.members.map((m) => m.user));
+    const project = res.data.project;
+    setProjectName(project.name);
+    setColumns(project.columns);
+    setLabels(project.labels || []);
+
+    // Atanabilir kisiler: proje uyeleri + (varsa) takim uyeleri, tekillestirilmis
+    const projectUsers = project.members.map((m) => m.user);
+    const teamUsers = project.team ? project.team.members.map((m) => m.user) : [];
+    const unique = Array.from(
+      new Map([...projectUsers, ...teamUsers].map((u) => [u.id, u])).values()
+    );
+    setMembers(unique);
     setLoading(false);
   };
 
@@ -200,9 +210,11 @@ export default function Board() {
         <TaskModal
           task={selectedTask}
           members={members}
+          projectLabels={labels}
           onClose={() => setSelectedTask(null)}
           onSave={saveTask}
           onDelete={removeTask}
+          onChange={load}
         />
       )}
     </div>
