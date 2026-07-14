@@ -41,6 +41,18 @@ export default function TaskCard({ task, onOpen }) {
       className="task-card"
       onClick={() => onOpen(task)}
     >
+      {task.labels && task.labels.length > 0 && (
+        <div className="card-labels">
+          {task.labels.map((tl) => (
+            <span
+              key={tl.id}
+              className="card-label"
+              style={{ background: tl.label.color }}
+              title={tl.label.name}
+            />
+          ))}
+        </div>
+      )}
       <div className="task-title">{task.title}</div>
       <div className="task-meta">
         <span className={`badge prio-${pr.cls}`}>{pr.label}</span>
