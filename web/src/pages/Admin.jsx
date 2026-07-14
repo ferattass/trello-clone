@@ -118,21 +118,33 @@ export default function Admin() {
         {/* İstatistik kartları */}
         {stats && (
           <div className="admin-stats">
-            <div className="admin-stat-card">
-              <span className="admin-stat-num">{stats.users}</span>
-              <span className="admin-stat-label">Kullanıcı</span>
+            <div className="admin-stat-card sc-users">
+              <span className="admin-stat-icon">👤</span>
+              <div className="admin-stat-body">
+                <span className="admin-stat-num">{stats.users}</span>
+                <span className="admin-stat-label">Kullanıcı</span>
+              </div>
             </div>
-            <div className="admin-stat-card">
-              <span className="admin-stat-num">{stats.teams}</span>
-              <span className="admin-stat-label">Takım</span>
+            <div className="admin-stat-card sc-teams">
+              <span className="admin-stat-icon">👥</span>
+              <div className="admin-stat-body">
+                <span className="admin-stat-num">{stats.teams}</span>
+                <span className="admin-stat-label">Takım</span>
+              </div>
             </div>
-            <div className="admin-stat-card">
-              <span className="admin-stat-num">{stats.projects}</span>
-              <span className="admin-stat-label">Proje</span>
+            <div className="admin-stat-card sc-projects">
+              <span className="admin-stat-icon">📋</span>
+              <div className="admin-stat-body">
+                <span className="admin-stat-num">{stats.projects}</span>
+                <span className="admin-stat-label">Proje</span>
+              </div>
             </div>
-            <div className="admin-stat-card">
-              <span className="admin-stat-num">{stats.tasks}</span>
-              <span className="admin-stat-label">Görev</span>
+            <div className="admin-stat-card sc-tasks">
+              <span className="admin-stat-icon">✅</span>
+              <div className="admin-stat-body">
+                <span className="admin-stat-num">{stats.tasks}</span>
+                <span className="admin-stat-label">Görev</span>
+              </div>
             </div>
           </div>
         )}
