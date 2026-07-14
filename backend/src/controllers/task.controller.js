@@ -2,6 +2,9 @@ import prisma from "../lib/prisma.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { HttpError } from "../utils/httpError.js";
 import { requireProjectMember } from "../utils/access.js";
+import { emitBoardUpdate } from "../utils/realtime.js";
+
+const assigneeSelect = { assignee: { select: { id: true, name: true, email: true } } };
 
 // Gorevi bul + kullanicinin o projeye yetkisini dogrula
 async function getTaskWithAccess(taskId, userId) {
@@ -43,7 +46,7 @@ export const createTask = asyncHandler(async (req, res) => {
   }
   await requireProjectMember(column.projectId, req.user.id);
 
-  const { title, description, assigneeId } = req.body;
+  const { title, description, assigneeId, priority, dueDate } = req.body;
   if (assigneeId) {
     await assertAssigneeIsMember(column.projectId, assigneeId);
   }
@@ -53,12 +56,17 @@ export const createTask = asyncHandler(async (req, res) => {
     data: {
       title,
       description,
+      priority,
+      dueDate,
       assigneeId: assigneeId ?? null,
       columnId,
       projectId: column.projectId,
       position: count,
     },
+    include: assigneeSelect,
   });
+
+  emitBoardUpdate(req, column.projectId);
   res.status(201).json({ task });
 });
 
@@ -66,15 +74,18 @@ export const updateTask = asyncHandler(async (req, res) => {
   const taskId = Number(req.params.id);
   const task = await getTaskWithAccess(taskId, req.user.id);
 
-  const { title, description, assigneeId } = req.body;
+  const { title, description, assigneeId, priority, dueDate } = req.body;
   if (assigneeId) {
     await assertAssigneeIsMember(task.projectId, assigneeId);
   }
 
   const updated = await prisma.task.update({
     where: { id: taskId },
-    data: { title, description, assigneeId },
+    data: { title, description, assigneeId, priority, dueDate },
+    include: assigneeSelect,
   });
+
+  emitBoardUpdate(req, task.projectId);
   res.json({ task: updated });
 });
 
@@ -95,13 +106,17 @@ export const moveTask = asyncHandler(async (req, res) => {
     where: { id: taskId },
     data: { columnId, position },
   });
+
+  emitBoardUpdate(req, task.projectId);
   res.json({ task: updated });
 });
 
 export const deleteTask = asyncHandler(async (req, res) => {
   const taskId = Number(req.params.id);
-  await getTaskWithAccess(taskId, req.user.id);
+  const task = await getTaskWithAccess(taskId, req.user.id);
 
   await prisma.task.delete({ where: { id: taskId } });
+
+  emitBoardUpdate(req, task.projectId);
   res.json({ message: "Gorev silindi" });
 });

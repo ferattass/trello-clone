@@ -2,6 +2,7 @@ import prisma from "../lib/prisma.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { HttpError } from "../utils/httpError.js";
 import { requireProjectMember } from "../utils/access.js";
+import { emitBoardUpdate } from "../utils/realtime.js";
 
 // Sutunu bul + kullanicinin o projeye yetkisini dogrula
 async function getColumnWithAccess(columnId, userId) {
@@ -33,41 +34,48 @@ export const createColumn = asyncHandler(async (req, res) => {
   const column = await prisma.column.create({
     data: { name: req.body.name, projectId, position: count },
   });
+
+  emitBoardUpdate(req, projectId);
   res.status(201).json({ column });
 });
 
 export const updateColumn = asyncHandler(async (req, res) => {
   const columnId = Number(req.params.id);
-  await getColumnWithAccess(columnId, req.user.id);
+  const existing = await getColumnWithAccess(columnId, req.user.id);
 
   const column = await prisma.column.update({
     where: { id: columnId },
     data: { name: req.body.name },
   });
+
+  emitBoardUpdate(req, existing.projectId);
   res.json({ column });
 });
 
 export const moveColumn = asyncHandler(async (req, res) => {
   const columnId = Number(req.params.id);
-  await getColumnWithAccess(columnId, req.user.id);
+  const existing = await getColumnWithAccess(columnId, req.user.id);
 
   const column = await prisma.column.update({
     where: { id: columnId },
     data: { position: req.body.position },
   });
+
+  emitBoardUpdate(req, existing.projectId);
   res.json({ column });
 });
 
 export const deleteColumn = asyncHandler(async (req, res) => {
   const columnId = Number(req.params.id);
-  await getColumnWithAccess(columnId, req.user.id);
+  const existing = await getColumnWithAccess(columnId, req.user.id);
 
   await prisma.column.delete({ where: { id: columnId } });
+
+  emitBoardUpdate(req, existing.projectId);
   res.json({ message: "Sutun silindi" });
 });
 
 // Surukle-birak sonrasi: gorevleri verilen sirayla bu sutuna yerlestir.
-// Gonderilen sirdaki her gorevin columnId'si bu sutun, position'i index olur.
 export const reorderColumn = asyncHandler(async (req, res) => {
   const columnId = Number(req.params.id);
   const column = await getColumnWithAccess(columnId, req.user.id);
@@ -92,5 +100,6 @@ export const reorderColumn = asyncHandler(async (req, res) => {
     )
   );
 
+  emitBoardUpdate(req, column.projectId);
   res.json({ message: "Siralama guncellendi" });
 });

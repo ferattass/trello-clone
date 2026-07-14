@@ -1,7 +1,20 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-export default function TaskCard({ task }) {
+const PRIORITY = {
+  LOW: { label: "Düşük", cls: "low" },
+  MEDIUM: { label: "Orta", cls: "medium" },
+  HIGH: { label: "Yüksek", cls: "high" },
+};
+
+function formatDate(value) {
+  return new Date(value).toLocaleDateString("tr-TR", {
+    day: "2-digit",
+    month: "short",
+  });
+}
+
+export default function TaskCard({ task, onOpen }) {
   const {
     attributes,
     listeners,
@@ -17,6 +30,8 @@ export default function TaskCard({ task }) {
     opacity: isDragging ? 0.4 : 1,
   };
 
+  const pr = PRIORITY[task.priority] || PRIORITY.MEDIUM;
+
   return (
     <div
       ref={setNodeRef}
@@ -24,13 +39,18 @@ export default function TaskCard({ task }) {
       {...attributes}
       {...listeners}
       className="task-card"
+      onClick={() => onOpen(task)}
     >
-      <span>{task.title}</span>
-      {task.assignee && (
-        <span className="assignee" title={task.assignee.name}>
-          {task.assignee.name[0].toUpperCase()}
-        </span>
-      )}
+      <div className="task-title">{task.title}</div>
+      <div className="task-meta">
+        <span className={`badge prio-${pr.cls}`}>{pr.label}</span>
+        {task.dueDate && <span className="badge due">📅 {formatDate(task.dueDate)}</span>}
+        {task.assignee && (
+          <span className="assignee" title={task.assignee.name}>
+            {task.assignee.name[0].toUpperCase()}
+          </span>
+        )}
+      </div>
     </div>
   );
 }

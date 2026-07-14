@@ -394,11 +394,182 @@ button.ghost:hover {
   font-size: 14px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   gap: 8px;
   cursor: grab;
   touch-action: none;
+}
+
+.task-card:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+}
+
+.task-title {
+  line-height: 1.35;
+}
+
+.task-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.prio-low {
+  background: #e3fcef;
+  color: #006644;
+}
+
+.prio-medium {
+  background: #fff7e6;
+  color: #b25e00;
+}
+
+.prio-high {
+  background: #ffebe6;
+  color: #bf2600;
+}
+
+.badge.due {
+  background: #f0f3f8;
+  color: #42526e;
+}
+
+.task-meta .assignee {
+  margin-left: auto;
+}
+
+/* ---- Görev detay modalı ---- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 480px;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-head {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.modal-title {
+  flex: 1;
+  font-size: 18px;
+  font-weight: 700;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 4px 0;
+  outline: none;
+  color: var(--text);
+}
+
+.modal-title:focus {
+  border-bottom-color: var(--primary);
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.modal label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  margin: 14px 0 6px;
+}
+
+.modal textarea,
+.modal select,
+.modal input[type="date"] {
+  width: 100%;
+  padding: 9px 11px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  font-family: inherit;
+}
+
+.modal textarea:focus,
+.modal select:focus,
+.modal input:focus {
+  border-color: var(--primary);
+}
+
+.modal-row {
+  display: flex;
+  gap: 12px;
+}
+
+.modal-row > div {
+  flex: 1;
+}
+
+.modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.modal-actions .spacer {
+  flex: 1;
+}
+
+.modal-actions button {
+  padding: 9px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--primary);
+  color: #fff;
+}
+
+.modal-actions button:hover {
+  background: var(--primary-dark);
+}
+
+.modal-actions button.ghost {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+.modal-actions button.danger {
+  background: transparent;
+  color: #bf2600;
+  border: 1px solid #ffbdad;
 }
 
 .task-card.dragging {

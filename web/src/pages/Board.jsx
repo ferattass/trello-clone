@@ -11,17 +11,20 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import api from "../api/client.js";
+import socket from "../api/socket.js";
 import Column from "../components/Column.jsx";
 import AddColumn from "../components/AddColumn.jsx";
+import TaskModal from "../components/TaskModal.jsx";
 
 export default function Board() {
   const { id } = useParams();
   const [projectName, setProjectName] = useState("");
   const [columns, setColumns] = useState([]);
+  const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTask, setActiveTask] = useState(null);
+  const [selectedTask, setSelectedTask] = useState(null);
 
-  // Kart en az 6px surukleninde tutulmus sayilir (yoksa tiklamayla karisir)
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
@@ -31,11 +34,23 @@ export default function Board() {
     const res = await api.get(`/projects/${id}`);
     setProjectName(res.data.project.name);
     setColumns(res.data.project.columns);
+    setMembers(res.data.project.members.map((m) => m.user));
     setLoading(false);
   };
 
   useEffect(() => {
     load();
+  }, [id]);
+
+  // Gerçek zamanlı: bu projenin odasına katıl; değişiklik gelince panoyu tazele
+  useEffect(() => {
+    socket.emit("join-project", id);
+    const onUpdate = () => load();
+    socket.on("board:updated", onUpdate);
+    return () => {
+      socket.emit("leave-project", id);
+      socket.off("board:updated", onUpdate);
+    };
   }, [id]);
 
   const addTask = async (columnId, title) => {
@@ -48,7 +63,19 @@ export default function Board() {
     load();
   };
 
-  // ---- Surukle-birak yardimcilari ----
+  const saveTask = async (taskId, data) => {
+    await api.put(`/tasks/${taskId}`, data);
+    setSelectedTask(null);
+    load();
+  };
+
+  const removeTask = async (taskId) => {
+    await api.delete(`/tasks/${taskId}`);
+    setSelectedTask(null);
+    load();
+  };
+
+  // ---- Sürükle-bırak yardımcıları ----
   const isColumnDroppable = (overId) =>
     typeof overId === "string" && overId.startsWith("column:");
 
@@ -91,10 +118,8 @@ export default function Board() {
       if (overIndex === -1) overIndex = destCol.tasks.length;
     }
 
-    // Ayni yerde birakildiysa bir sey yapma
     if (sourceCol.id === destCol.id && activeIndex === overIndex) return;
 
-    // Yeni durumu hesapla (ekrani aninda guncelle - iyimser guncelleme)
     const next = columns.map((c) => ({ ...c, tasks: [...c.tasks] }));
     const nSource = next.find((c) => c.id === sourceCol.id);
     const nDest = next.find((c) => c.id === destCol.id);
@@ -109,7 +134,6 @@ export default function Board() {
 
     setColumns(next);
 
-    // Backend'e kalici kaydet: hedef (ve farkliysa kaynak) sutun sirasi
     try {
       await api.put(`/columns/${nDest.id}/reorder`, {
         taskIds: nDest.tasks.map((t) => t.id),
@@ -120,7 +144,7 @@ export default function Board() {
         });
       }
     } catch {
-      load(); // hata olursa backend'den tazele
+      load();
     }
   };
 
@@ -147,7 +171,12 @@ export default function Board() {
       >
         <div className="board">
           {columns.map((column) => (
-            <Column key={column.id} column={column} onAddTask={addTask} />
+            <Column
+              key={column.id}
+              column={column}
+              onAddTask={addTask}
+              onOpenTask={setSelectedTask}
+            />
           ))}
           <AddColumn onAdd={addColumn} />
         </div>
@@ -155,11 +184,21 @@ export default function Board() {
         <DragOverlay>
           {activeTask ? (
             <div className="task-card dragging">
-              <span>{activeTask.title}</span>
+              <div className="task-title">{activeTask.title}</div>
             </div>
           ) : null}
         </DragOverlay>
       </DndContext>
+
+      {selectedTask && (
+        <TaskModal
+          task={selectedTask}
+          members={members}
+          onClose={() => setSelectedTask(null)}
+          onSave={saveTask}
+          onDelete={removeTask}
+        />
+      )}
     </div>
   );
 }
