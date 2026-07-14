@@ -3,7 +3,7 @@ import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import TaskCard from "./TaskCard.jsx";
 
-export default function Column({ column, onAddTask, onOpenTask }) {
+export default function Column({ column, onAddTask, onOpenTask, onDeleteColumn }) {
   const [adding, setAdding] = useState(false);
   const [title, setTitle] = useState("");
 
@@ -19,11 +19,24 @@ export default function Column({ column, onAddTask, onOpenTask }) {
     setAdding(false);
   };
 
+  const handleDelete = () => {
+    const msg =
+      column.tasks.length > 0
+        ? `"${column.name}" sütunu ve içindeki ${column.tasks.length} kart silinsin mi?`
+        : `"${column.name}" sütunu silinsin mi?`;
+    if (window.confirm(msg)) {
+      onDeleteColumn(column.id);
+    }
+  };
+
   return (
     <div className="column">
       <div className="column-head">
         <h3>{column.name}</h3>
         <span className="count">{column.tasks.length}</span>
+        <button className="col-del" onClick={handleDelete} title="Sütunu sil">
+          ✕
+        </button>
       </div>
 
       <SortableContext items={taskIds} strategy={verticalListSortingStrategy}>

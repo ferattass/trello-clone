@@ -28,6 +28,14 @@ export default function Projects() {
     load();
   };
 
+  const deleteProject = async (e, p) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!window.confirm(`"${p.name}" projesi ve tüm içeriği silinsin mi?`)) return;
+    await api.delete(`/projects/${p.id}`);
+    load();
+  };
+
   return (
     <div className="page">
       <header className="topbar">
@@ -61,8 +69,16 @@ export default function Projects() {
           <div className="project-grid">
             {projects.map((p) => (
               <Link key={p.id} to={`/projects/${p.id}`} className="project-card">
+                <button
+                  className="project-del"
+                  onClick={(e) => deleteProject(e, p)}
+                  title="Projeyi sil"
+                >
+                  ✕
+                </button>
                 <h3>{p.name}</h3>
                 {p.description && <p>{p.description}</p>}
+                {p.team && <span className="team-tag">👥 {p.team.name}</span>}
               </Link>
             ))}
           </div>

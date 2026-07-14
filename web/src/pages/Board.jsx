@@ -63,6 +63,11 @@ export default function Board() {
     load();
   };
 
+  const deleteColumn = async (columnId) => {
+    await api.delete(`/columns/${columnId}`);
+    load();
+  };
+
   const saveTask = async (taskId, data) => {
     await api.put(`/tasks/${taskId}`, data);
     setSelectedTask(null);
@@ -176,6 +181,7 @@ export default function Board() {
               column={column}
               onAddTask={addTask}
               onOpenTask={setSelectedTask}
+              onDeleteColumn={deleteColumn}
             />
           ))}
           <AddColumn onAdd={addColumn} />
