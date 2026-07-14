@@ -1,7 +1,10 @@
 import prisma from "../lib/prisma.js";
 import { HttpError } from "./httpError.js";
 
-// Kullanici projenin uyesi mi? Degilse hata firlatir, uyeyse projeyi doner.
+// Kullanici projeye erisebilir mi? Iki yoldan erisim var:
+//  1) Projenin dogrudan uyesi (ProjectMember)
+//  2) Proje bir takima aitse, o takimin uyesi (TeamMember)
+// Erisim varsa projeyi doner, yoksa hata firlatir.
 export async function requireProjectMember(projectId, userId) {
   const project = await prisma.project.findUnique({ where: { id: projectId } });
   if (!project) {
@@ -11,9 +14,18 @@ export async function requireProjectMember(projectId, userId) {
   const membership = await prisma.projectMember.findUnique({
     where: { projectId_userId: { projectId, userId } },
   });
-  if (!membership) {
-    throw new HttpError(403, "Bu projeye erisim yetkiniz yok");
+  if (membership) {
+    return project;
   }
 
-  return project;
+  if (project.teamId) {
+    const teamMember = await prisma.teamMember.findUnique({
+      where: { teamId_userId: { teamId: project.teamId, userId } },
+    });
+    if (teamMember) {
+      return project;
+    }
+  }
+
+  throw new HttpError(403, "Bu projeye erisim yetkiniz yok");
 }

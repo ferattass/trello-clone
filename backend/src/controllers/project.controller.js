@@ -2,19 +2,27 @@ import prisma from "../lib/prisma.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { HttpError } from "../utils/httpError.js";
 import { requireProjectMember } from "../utils/access.js";
+import { requireTeamMember } from "../utils/teamAccess.js";
+import { logActivity } from "../utils/activityLog.js";
 
 const DEFAULT_COLUMNS = ["To Do", "Doing", "Done"];
 
-// Yeni proje olustur: sahibini uye yap + varsayilan sutunlari ac
+// Yeni proje olustur: sahibini uye yap + varsayilan sutunlari ac.
+// teamId verilirse pano o takima ait olur (kullanici o takimin uyesi olmali).
 export const createProject = asyncHandler(async (req, res) => {
-  const { name, description } = req.body;
+  const { name, description, teamId } = req.body;
   const userId = req.user.id;
+
+  if (teamId) {
+    await requireTeamMember(teamId, userId);
+  }
 
   const project = await prisma.project.create({
     data: {
       name,
       description,
       ownerId: userId,
+      teamId: teamId ?? null,
       members: { create: { userId } },
       columns: {
         create: DEFAULT_COLUMNS.map((columnName, index) => ({
@@ -26,13 +34,21 @@ export const createProject = asyncHandler(async (req, res) => {
     include: { columns: { orderBy: { position: "asc" } } },
   });
 
+  await logActivity(project.id, userId, `"${name}" panosunu olusturdu`);
   res.status(201).json({ project });
 });
 
-// Kullanicinin uyesi oldugu projeler
+// Kullanicinin erisebildigi projeler: dogrudan uye oldugu VEYA takimi uzerinden
 export const getProjects = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
   const projects = await prisma.project.findMany({
-    where: { members: { some: { userId: req.user.id } } },
+    where: {
+      OR: [
+        { members: { some: { userId } } },
+        { team: { members: { some: { userId } } } },
+      ],
+    },
+    include: { team: { select: { id: true, name: true } } },
     orderBy: { createdAt: "desc" },
   });
   res.json({ projects });
@@ -53,6 +69,8 @@ export const getProject = asyncHandler(async (req, res) => {
             orderBy: { position: "asc" },
             include: {
               assignee: { select: { id: true, name: true, email: true } },
+              labels: { include: { label: true } },
+              _count: { select: { comments: true, checklist: true } },
             },
           },
         },
@@ -60,6 +78,16 @@ export const getProject = asyncHandler(async (req, res) => {
       members: {
         include: { user: { select: { id: true, name: true, email: true } } },
       },
+      team: {
+        select: {
+          id: true,
+          name: true,
+          members: {
+            include: { user: { select: { id: true, name: true, email: true } } },
+          },
+        },
+      },
+      labels: true,
     },
   });
 

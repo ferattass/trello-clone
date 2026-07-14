@@ -18,6 +18,12 @@ enum Priority {
   HIGH
 }
 
+enum TeamRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
 model User {
   id        Int      @id @default(autoincrement())
   name      String
@@ -26,9 +32,39 @@ model User {
   role      Role     @default(USER)
   createdAt DateTime @default(now())
 
-  ownedProjects Project[]       @relation("ProjectOwner")
-  memberships   ProjectMember[]
-  assignedTasks Task[]          @relation("TaskAssignee")
+  ownedProjects   Project[]       @relation("ProjectOwner")
+  memberships     ProjectMember[]
+  assignedTasks   Task[]          @relation("TaskAssignee")
+  ownedTeams      Team[]          @relation("TeamOwner")
+  teamMemberships TeamMember[]
+  comments        Comment[]
+  notifications   Notification[]
+  activities      Activity[]
+}
+
+model Team {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  ownerId     Int
+  createdAt   DateTime @default(now())
+
+  owner    User         @relation("TeamOwner", fields: [ownerId], references: [id])
+  members  TeamMember[]
+  projects Project[]
+}
+
+model TeamMember {
+  id        Int      @id @default(autoincrement())
+  teamId    Int
+  userId    Int
+  role      TeamRole @default(MEMBER)
+  createdAt DateTime @default(now())
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, userId])
 }
 
 model Project {
@@ -36,12 +72,16 @@ model Project {
   name        String
   description String?
   ownerId     Int
+  teamId      Int?
   createdAt   DateTime @default(now())
 
-  owner   User            @relation("ProjectOwner", fields: [ownerId], references: [id])
-  members ProjectMember[]
-  columns Column[]
-  tasks   Task[]
+  owner      User            @relation("ProjectOwner", fields: [ownerId], references: [id])
+  team       Team?           @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  members    ProjectMember[]
+  columns    Column[]
+  tasks      Task[]
+  labels     Label[]
+  activities Activity[]
 }
 
 model ProjectMember {
@@ -82,7 +122,77 @@ model Task {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
-  column   Column  @relation(fields: [columnId], references: [id], onDelete: Cascade)
-  project  Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  assignee User?   @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  column    Column          @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  project   Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  assignee  User?           @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  labels    TaskLabel[]
+  comments  Comment[]
+  checklist ChecklistItem[]
+}
+
+model Label {
+  id        Int      @id @default(autoincrement())
+  name      String
+  color     String
+  projectId Int
+  createdAt DateTime @default(now())
+
+  project Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  tasks   TaskLabel[]
+}
+
+model TaskLabel {
+  id      Int @id @default(autoincrement())
+  taskId  Int
+  labelId Int
+
+  task  Task  @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  label Label @relation(fields: [labelId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, labelId])
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  text      String
+  taskId    Int
+  userId    Int
+  createdAt DateTime @default(now())
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ChecklistItem {
+  id        Int      @id @default(autoincrement())
+  text      String
+  done      Boolean  @default(false)
+  position  Int
+  taskId    Int
+  createdAt DateTime @default(now())
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+}
+
+model Activity {
+  id        Int      @id @default(autoincrement())
+  action    String
+  projectId Int
+  userId    Int
+  taskId    Int?
+  createdAt DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  text      String
+  link      String?
+  read      Boolean  @default(false)
+  userId    Int
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

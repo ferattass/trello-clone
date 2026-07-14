@@ -3,6 +3,8 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { HttpError } from "../utils/httpError.js";
 import { requireProjectMember } from "../utils/access.js";
 import { emitBoardUpdate } from "../utils/realtime.js";
+import { logActivity } from "../utils/activityLog.js";
+import { notify } from "../utils/notify.js";
 
 const assigneeSelect = { assignee: { select: { id: true, name: true, email: true } } };
 
@@ -16,14 +18,25 @@ async function getTaskWithAccess(taskId, userId) {
   return task;
 }
 
-// Atanan kisi gercekten projenin uyesi mi?
+// Atanan kisi projeye erisebiliyor mu? (dogrudan uye ya da takim uyesi)
 async function assertAssigneeIsMember(projectId, assigneeId) {
   const membership = await prisma.projectMember.findUnique({
     where: { projectId_userId: { projectId, userId: assigneeId } },
   });
-  if (!membership) {
-    throw new HttpError(400, "Atanan kisi projenin uyesi degil");
+  if (membership) return;
+
+  const project = await prisma.project.findUnique({
+    where: { id: projectId },
+    select: { teamId: true },
+  });
+  if (project?.teamId) {
+    const teamMember = await prisma.teamMember.findUnique({
+      where: { teamId_userId: { teamId: project.teamId, userId: assigneeId } },
+    });
+    if (teamMember) return;
   }
+
+  throw new HttpError(400, "Atanan kisi projenin uyesi degil");
 }
 
 export const getTasks = asyncHandler(async (req, res) => {
@@ -66,6 +79,11 @@ export const createTask = asyncHandler(async (req, res) => {
     include: assigneeSelect,
   });
 
+  await logActivity(column.projectId, req.user.id, `"${title}" gorevini olusturdu`, task.id);
+  if (assigneeId && assigneeId !== req.user.id) {
+    await notify(assigneeId, `Size bir gorev atandi: ${title}`, `/projects/${column.projectId}`);
+  }
+
   emitBoardUpdate(req, column.projectId);
   res.status(201).json({ task });
 });
@@ -84,6 +102,11 @@ export const updateTask = asyncHandler(async (req, res) => {
     data: { title, description, assigneeId, priority, dueDate },
     include: assigneeSelect,
   });
+
+  // Yeni biri atandiysa ona bildirim gonder
+  if (assigneeId && assigneeId !== task.assigneeId && assigneeId !== req.user.id) {
+    await notify(assigneeId, `Size bir gorev atandi: ${updated.title}`, `/projects/${task.projectId}`);
+  }
 
   emitBoardUpdate(req, task.projectId);
   res.json({ task: updated });
@@ -117,6 +140,7 @@ export const deleteTask = asyncHandler(async (req, res) => {
 
   await prisma.task.delete({ where: { id: taskId } });
 
+  await logActivity(task.projectId, req.user.id, `"${task.title}" gorevini sildi`);
   emitBoardUpdate(req, task.projectId);
   res.json({ message: "Gorev silindi" });
 });
