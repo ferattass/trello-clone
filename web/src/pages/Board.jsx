@@ -15,6 +15,8 @@ import socket from "../api/socket.js";
 import Column from "../components/Column.jsx";
 import AddColumn from "../components/AddColumn.jsx";
 import TaskModal from "../components/TaskModal.jsx";
+import TaskTable from "../components/TaskTable.jsx";
+import Icon from "../components/Icon.jsx";
 
 export default function Board() {
   const { id } = useParams();
@@ -25,6 +27,7 @@ export default function Board() {
   const [loading, setLoading] = useState(true);
   const [activeTask, setActiveTask] = useState(null);
   const [selectedTask, setSelectedTask] = useState(null);
+  const [view, setView] = useState("board");
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
@@ -172,12 +175,29 @@ export default function Board() {
       <header className="topbar">
         <div className="board-title">
           <Link to="/" className="back">
-            ← Projeler
+            <Icon name="arrow-left" size={16} /> Projeler
           </Link>
           <h1>{projectName}</h1>
         </div>
+        <div className="view-switch">
+          <button
+            type="button"
+            className={view === "board" ? "active" : ""}
+            onClick={() => setView("board")}
+          >
+            <Icon name="board" size={15} /> Pano
+          </button>
+          <button
+            type="button"
+            className={view === "table" ? "active" : ""}
+            onClick={() => setView("table")}
+          >
+            <Icon name="table" size={15} /> Tablo
+          </button>
+        </div>
       </header>
 
+      {view === "board" ? (
       <DndContext
         sensors={sensors}
         collisionDetection={closestCorners}
@@ -205,6 +225,9 @@ export default function Board() {
           ) : null}
         </DragOverlay>
       </DndContext>
+      ) : (
+        <TaskTable columns={columns} onOpenTask={setSelectedTask} />
+      )}
 
       {selectedTask && (
         <TaskModal
