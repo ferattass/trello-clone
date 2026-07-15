@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import api from "../api/client.js";
 import { useAuth } from "../context/AuthContext.jsx";
+import Icon from "../components/Icon.jsx";
 import "../styles/teams.css";
 
 const ROLE_LABELS = {
@@ -172,8 +173,9 @@ export default function TeamDetail() {
                       className="member-remove"
                       onClick={() => removeMember(m.userId)}
                       title="Üyeyi çıkar"
+                      aria-label="Üyeyi çıkar"
                     >
-                      ✕
+                      <Icon name="x" size={13} />
                     </button>
                   </div>
                 )}

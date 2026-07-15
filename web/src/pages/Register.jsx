@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
+import ThemeToggle from "../components/ThemeToggle.jsx";
 
 export default function Register() {
   const { register } = useAuth();
@@ -27,6 +28,7 @@ export default function Register() {
 
   return (
     <div className="auth-page">
+      <ThemeToggle />
       <form className="auth-card" onSubmit={handleSubmit}>
         <h1>Kayıt Ol</h1>
         {error && <div className="error">{error}</div>}

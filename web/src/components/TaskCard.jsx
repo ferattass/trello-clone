@@ -1,5 +1,6 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import Icon from "./Icon.jsx";
 
 const PRIORITY = {
   LOW: { label: "Düşük", cls: "low" },
@@ -56,7 +57,11 @@ export default function TaskCard({ task, onOpen }) {
       <div className="task-title">{task.title}</div>
       <div className="task-meta">
         <span className={`badge prio-${pr.cls}`}>{pr.label}</span>
-        {task.dueDate && <span className="badge due">📅 {formatDate(task.dueDate)}</span>}
+        {task.dueDate && (
+          <span className="badge due">
+            <Icon name="calendar" size={12} /> {formatDate(task.dueDate)}
+          </span>
+        )}
         {task.assignee && (
           <span className="assignee" title={task.assignee.name}>
             {task.assignee.name[0].toUpperCase()}

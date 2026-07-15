@@ -6,24 +6,27 @@
   position: relative;
   background: transparent;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  color: var(--text);
+  border-radius: var(--radius-sm);
   padding: 7px 10px;
   cursor: pointer;
   font-size: 16px;
   line-height: 1;
   display: flex;
   align-items: center;
+  transition: background 0.15s, border-color 0.15s;
 }
 
 .notif-bell:hover {
-  background: var(--bg);
+  background: var(--panel-2);
+  border-color: var(--border-strong);
 }
 
 .notif-badge {
   position: absolute;
   top: -6px;
   right: -6px;
-  background: #dc2626;
+  background: var(--danger);
   color: #fff;
   font-size: 10px;
   font-weight: 700;
@@ -32,7 +35,7 @@
   min-width: 18px;
   text-align: center;
   line-height: 16px;
-  border: 2px solid #fff;
+  border: 2px solid var(--panel);
   pointer-events: none;
 }
 
@@ -46,10 +49,10 @@
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  background: #fff;
+  background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: 10px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
   width: 340px;
   max-height: 420px;
   display: flex;
@@ -66,13 +69,14 @@
   border-bottom: 1px solid var(--border);
   font-weight: 700;
   font-size: 14px;
+  color: var(--text);
   flex-shrink: 0;
 }
 
 .notif-mark-all {
   background: none;
   border: none;
-  color: var(--primary);
+  color: var(--link);
   font-size: 12px;
   cursor: pointer;
   font-weight: 600;
@@ -108,15 +112,15 @@
 }
 
 .notif-item:hover {
-  background: var(--bg);
+  background: var(--panel-2);
 }
 
 .notif-unread {
-  background: #eff6ff;
+  background: var(--primary-soft);
 }
 
 .notif-unread:hover {
-  background: #dbeafe;
+  background: var(--primary-soft);
 }
 
 .notif-text {

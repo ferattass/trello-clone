@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Icon from "./Icon.jsx";
 import TaskLabels from "./TaskLabels.jsx";
 import TaskChecklist from "./TaskChecklist.jsx";
 import TaskComments from "./TaskComments.jsx";
@@ -44,8 +45,12 @@ export default function TaskModal({
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
-          <button className="modal-close" onClick={onClose}>
-            ✕
+          <button
+            className="modal-close"
+            onClick={onClose}
+            aria-label="Kapat"
+          >
+            <Icon name="x" size={16} />
           </button>
         </div>
 

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import TaskCard from "./TaskCard.jsx";
+import Icon from "./Icon.jsx";
 
 export default function Column({ column, onAddTask, onOpenTask, onDeleteColumn }) {
   const [adding, setAdding] = useState(false);
@@ -34,8 +35,13 @@ export default function Column({ column, onAddTask, onOpenTask, onDeleteColumn }
       <div className="column-head">
         <h3>{column.name}</h3>
         <span className="count">{column.tasks.length}</span>
-        <button className="col-del" onClick={handleDelete} title="Sütunu sil">
-          ✕
+        <button
+          className="col-del"
+          onClick={handleDelete}
+          title="Sütunu sil"
+          aria-label="Sütunu sil"
+        >
+          <Icon name="x" size={13} />
         </button>
       </div>
 

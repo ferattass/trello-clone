@@ -3,47 +3,30 @@
 .admin-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 18px;
+  gap: 14px;
   margin-bottom: 28px;
 }
 
 .admin-stat-card {
-  background: #fff;
+  background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 20px;
+  border-radius: var(--radius);
+  padding: 18px;
   display: flex;
   align-items: center;
-  gap: 16px;
-  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.15s, box-shadow 0.15s;
-}
-
-.admin-stat-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.12);
-}
-
-.admin-stat-card::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 5px;
+  gap: 14px;
 }
 
 .admin-stat-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
+  width: 46px;
+  height: 46px;
+  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 22px;
   flex-shrink: 0;
+  background: var(--primary-soft);
 }
 
 .admin-stat-body {
@@ -52,44 +35,35 @@
 }
 
 .admin-stat-num {
-  font-size: 30px;
-  font-weight: 800;
+  font-size: 26px;
+  font-weight: 700;
   line-height: 1.1;
   color: var(--text);
 }
 
 .admin-stat-label {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--muted);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
 }
-
-.sc-users::before { background: #2563eb; }
-.sc-users .admin-stat-icon { background: linear-gradient(135deg, #3b82f6, #2563eb); }
-.sc-teams::before { background: #a855f7; }
-.sc-teams .admin-stat-icon { background: linear-gradient(135deg, #c084fc, #a855f7); }
-.sc-projects::before { background: #22c55e; }
-.sc-projects .admin-stat-icon { background: linear-gradient(135deg, #4ade80, #22c55e); }
-.sc-tasks::before { background: #f59e0b; }
-.sc-tasks .admin-stat-icon { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
 
 /* ---- Bölümler (kart) ---- */
 .admin-section {
-  background: #fff;
+  background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 24px;
-  margin-bottom: 24px;
-  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+  border-radius: var(--radius);
+  padding: 22px;
+  margin-bottom: 20px;
 }
 
 .admin-section h2 {
-  font-size: 17px;
+  font-size: 16px;
+  font-weight: 700;
   margin-bottom: 18px;
   padding-bottom: 12px;
-  border-bottom: 2px solid #eef2ff;
+  border-bottom: 1px solid var(--border);
   color: var(--text);
 }
 
@@ -122,17 +96,19 @@
 .admin-form-group select {
   padding: 10px 12px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: 14px;
   outline: none;
   font-family: inherit;
+  background: var(--panel);
+  color: var(--text);
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 
 .admin-form-group input:focus,
 .admin-form-group select:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  box-shadow: 0 0 0 3px var(--focus-ring);
 }
 
 .admin-field-hint {
@@ -143,33 +119,30 @@
 
 .admin-form button[type="submit"] {
   margin-top: 8px;
-  padding: 11px 22px;
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: #fff;
+  padding: 10px 20px;
+  background: var(--primary);
+  color: var(--on-primary);
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition: background 0.15s;
 }
 
 .admin-form button[type="submit"]:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4);
+  background: var(--primary-hover);
 }
 
 .admin-form button[type="submit"]:disabled {
-  opacity: 0.6;
+  opacity: 0.55;
   cursor: default;
-  transform: none;
 }
 
 /* ---- Tablolar ---- */
 .admin-table-wrap {
   overflow-x: auto;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border);
 }
 
@@ -180,11 +153,11 @@
 }
 
 .admin-table thead th {
-  background: #f8fafc;
+  background: var(--panel-2);
   color: var(--muted);
   font-size: 12px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
   text-align: left;
   padding: 12px 16px;
   border-bottom: 1px solid var(--border);
@@ -193,7 +166,8 @@
 
 .admin-table tbody td {
   padding: 12px 16px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
 }
 
 .admin-table tbody tr:last-child td {
@@ -201,7 +175,7 @@
 }
 
 .admin-table tbody tr:hover {
-  background: #f8fafc;
+  background: var(--panel-2);
 }
 
 .admin-email {
@@ -211,17 +185,17 @@
 .admin-role-badge {
   display: inline-block;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   padding: 3px 10px;
   border-radius: 20px;
 }
 
 .role-admin {
-  background: #f3e8ff;
-  color: #7e22ce;
+  background: var(--primary-soft);
+  color: var(--primary);
 }
 
 .role-user {
-  background: #dcfce7;
-  color: #15803d;
+  background: var(--success-soft);
+  color: var(--success);
 }

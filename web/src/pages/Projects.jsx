@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext.jsx";
 import api from "../api/client.js";
 import NotificationBell from "../components/NotificationBell.jsx";
-
+import Icon from "../components/Icon.jsx";
 
 export default function Projects() {
-  const { user, logout } = useAuth();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
@@ -40,24 +38,12 @@ export default function Projects() {
   return (
     <div className="page">
       <header className="topbar">
-        <h1>Projelerim</h1>
+        <div className="page-title">
+          <h1>Projeler</h1>
+          <p className="page-sub">Tüm panolarını buradan yönet.</p>
+        </div>
         <div className="user-box">
           <NotificationBell />
-          <Link to="/takimlar" className="ghost-link">
-            Takımlar
-          </Link>
-          {user.role === "ADMIN" && (
-            <Link to="/admin" className="ghost-link">
-              Admin
-            </Link>
-          )}
-          <span>{user.name}</span>
-          <Link to="/profil" className="ghost-link">
-            Profil
-          </Link>
-          <button className="ghost" onClick={logout}>
-            Çıkış
-          </button>
         </div>
       </header>
 
@@ -68,13 +54,21 @@ export default function Projects() {
             onChange={(e) => setName(e.target.value)}
             placeholder="Yeni proje adı..."
           />
-          <button type="submit">Oluştur</button>
+          <button type="submit">
+            <Icon name="plus" size={16} /> Oluştur
+          </button>
         </form>
 
         {loading ? (
           <p className="muted">Yükleniyor...</p>
         ) : projects.length === 0 ? (
-          <p className="muted">Henüz projen yok. Yukarıdan bir tane oluştur.</p>
+          <div className="empty-state">
+            <span className="empty-icon">
+              <Icon name="grid" size={26} />
+            </span>
+            <h3>Henüz projen yok</h3>
+            <p>Yukarıdaki kutudan ilk projeni oluşturarak başla.</p>
+          </div>
         ) : (
           <div className="project-grid">
             {projects.map((p) => (
@@ -83,12 +77,24 @@ export default function Projects() {
                   className="project-del"
                   onClick={(e) => deleteProject(e, p)}
                   title="Projeyi sil"
+                  aria-label="Projeyi sil"
                 >
-                  ✕
+                  <Icon name="x" size={14} />
                 </button>
+                <span className="project-card-icon">
+                  <Icon name="folder" size={18} />
+                </span>
                 <h3>{p.name}</h3>
-                {p.description && <p>{p.description}</p>}
-                {p.team && <span className="team-tag">👥 {p.team.name}</span>}
+                {p.description ? (
+                  <p>{p.description}</p>
+                ) : (
+                  <p className="card-empty">Açıklama eklenmemiş</p>
+                )}
+                {p.team && (
+                  <span className="team-tag">
+                    <Icon name="users" size={13} /> {p.team.name}
+                  </span>
+                )}
               </Link>
             ))}
           </div>

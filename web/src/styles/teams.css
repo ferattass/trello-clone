@@ -10,60 +10,67 @@
   flex: 1;
   padding: 10px 12px;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-size: 14px;
   outline: none;
+  background: var(--panel);
+  color: var(--text);
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 
 .new-team input:focus {
   border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--focus-ring);
 }
 
 .new-team button {
   padding: 10px 18px;
   background: var(--primary);
-  color: #fff;
+  color: var(--on-primary);
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-weight: 600;
+  font-size: 14px;
   cursor: pointer;
   white-space: nowrap;
+  transition: background 0.15s;
 }
 
 .new-team button:hover {
-  background: var(--primary-dark);
+  background: var(--primary-hover);
 }
 
 .new-team button:disabled {
-  opacity: 0.6;
+  opacity: 0.55;
   cursor: default;
 }
 
 .team-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 16px;
+  gap: 14px;
 }
 
 .team-card {
   background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius);
   padding: 18px;
   text-decoration: none;
   color: var(--text);
   display: flex;
   flex-direction: column;
-  transition: box-shadow 0.15s, transform 0.15s;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 
 .team-card:hover {
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-sm);
 }
 
 .team-card h3 {
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: 600;
   margin-bottom: 6px;
 }
 
@@ -85,7 +92,7 @@
 .team-owner {
   margin-top: 8px;
   font-size: 12px;
-  color: var(--muted);
+  color: var(--faint);
 }
 
 /* ---- Takım detay ---- */
@@ -105,7 +112,9 @@
 
 .team-section h2 {
   font-size: 15px;
+  font-weight: 700;
   margin-bottom: 14px;
+  color: var(--text);
 }
 
 .member-list {
@@ -121,7 +130,7 @@
   gap: 12px;
   background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   padding: 10px 14px;
 }
 
@@ -144,24 +153,24 @@
 
 .role-badge {
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   padding: 3px 10px;
   border-radius: 10px;
   white-space: nowrap;
 }
 
 .role-owner {
-  background: #eee4ff;
-  color: #6b2fb3;
-}
-
-.role-admin {
-  background: #eef2ff;
+  background: var(--primary-soft);
   color: var(--primary);
 }
 
+.role-admin {
+  background: var(--panel-2);
+  color: var(--text);
+}
+
 .role-member {
-  background: #f0f1f3;
+  background: var(--panel-2);
   color: var(--muted);
 }
 
@@ -177,28 +186,31 @@
   border-radius: 6px;
   font-size: 13px;
   outline: none;
+  background: var(--panel);
+  color: var(--text);
 }
 
 .member-remove {
   background: none;
   border: none;
-  color: var(--muted);
+  color: var(--faint);
   cursor: pointer;
   font-size: 13px;
   padding: 4px 8px;
   border-radius: 4px;
   line-height: 1;
+  transition: background 0.15s, color 0.15s;
 }
 
 .member-remove:hover {
-  background: var(--error-bg);
-  color: var(--error-text);
+  background: var(--danger-soft);
+  color: var(--danger);
 }
 
 .invite-form {
   background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   padding: 14px;
 }
 
@@ -211,40 +223,47 @@
   flex: 1;
   padding: 9px 11px;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-size: 14px;
   outline: none;
+  background: var(--panel);
+  color: var(--text);
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 
 .invite-row input:focus {
   border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--focus-ring);
 }
 
 .invite-row select {
   padding: 9px 10px;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-size: 14px;
   outline: none;
+  background: var(--panel);
+  color: var(--text);
 }
 
 .invite-row button {
   padding: 9px 16px;
   background: var(--primary);
-  color: #fff;
+  color: var(--on-primary);
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
+  transition: background 0.15s;
 }
 
 .invite-row button:hover {
-  background: var(--primary-dark);
+  background: var(--primary-hover);
 }
 
 .invite-row button:disabled {
-  opacity: 0.6;
+  opacity: 0.55;
   cursor: default;
 }
 
@@ -256,15 +275,16 @@
 
 .danger-btn {
   background: transparent;
-  border: 1px solid #ffbdad;
-  color: #bf2600;
+  border: 1px solid var(--danger);
+  color: var(--danger);
   padding: 9px 16px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+  transition: background 0.15s;
 }
 
 .danger-btn:hover {
-  background: var(--error-bg);
+  background: var(--danger-soft);
 }

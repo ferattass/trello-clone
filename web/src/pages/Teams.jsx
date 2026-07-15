@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../api/client.js";
+import Icon from "../components/Icon.jsx";
 import "../styles/teams.css";
 
 export default function Teams() {
@@ -72,8 +73,8 @@ export default function Teams() {
                 <h3>{team.name}</h3>
                 {team.description && <p>{team.description}</p>}
                 <div className="team-card-stats">
-                  <span>👤 {team._count?.members ?? 0} üye</span>
-                  <span>📋 {team._count?.projects ?? 0} pano</span>
+                  <span><Icon name="user" size={13} /> {team._count?.members ?? 0} üye</span>
+                  <span><Icon name="clipboard" size={13} /> {team._count?.projects ?? 0} pano</span>
                 </div>
                 <span className="team-owner">Sahibi: {team.owner?.name}</span>
               </Link>

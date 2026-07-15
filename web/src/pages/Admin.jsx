@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import api from "../api/client.js";
+import Icon from "../components/Icon.jsx";
 import "../styles/admin.css";
 
 const BOSH_FORM = { name: "", email: "", password: "", role: "USER", teamName: "" };
@@ -119,28 +120,28 @@ export default function Admin() {
         {stats && (
           <div className="admin-stats">
             <div className="admin-stat-card sc-users">
-              <span className="admin-stat-icon">👤</span>
+              <span className="admin-stat-icon"><Icon name="user" size={22} /></span>
               <div className="admin-stat-body">
                 <span className="admin-stat-num">{stats.users}</span>
                 <span className="admin-stat-label">Kullanıcı</span>
               </div>
             </div>
             <div className="admin-stat-card sc-teams">
-              <span className="admin-stat-icon">👥</span>
+              <span className="admin-stat-icon"><Icon name="users" size={22} /></span>
               <div className="admin-stat-body">
                 <span className="admin-stat-num">{stats.teams}</span>
                 <span className="admin-stat-label">Takım</span>
               </div>
             </div>
             <div className="admin-stat-card sc-projects">
-              <span className="admin-stat-icon">📋</span>
+              <span className="admin-stat-icon"><Icon name="clipboard" size={22} /></span>
               <div className="admin-stat-body">
                 <span className="admin-stat-num">{stats.projects}</span>
                 <span className="admin-stat-label">Proje</span>
               </div>
             </div>
             <div className="admin-stat-card sc-tasks">
-              <span className="admin-stat-icon">✅</span>
+              <span className="admin-stat-icon"><Icon name="check" size={22} /></span>
               <div className="admin-stat-body">
                 <span className="admin-stat-num">{stats.tasks}</span>
                 <span className="admin-stat-label">Görev</span>

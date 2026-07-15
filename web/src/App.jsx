@@ -8,60 +8,28 @@ import Teams from "./pages/Teams.jsx";
 import TeamDetail from "./pages/TeamDetail.jsx";
 import Admin from "./pages/Admin.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import Layout from "./components/Layout.jsx";
+
+// Korumali sayfalari hem giris kontrolu hem de ortak kabuk (sidebar) ile sarar.
+function Private({ children }) {
+  return (
+    <ProtectedRoute>
+      <Layout>{children}</Layout>
+    </ProtectedRoute>
+  );
+}
 
 export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <Projects />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/projects/:id"
-        element={
-          <ProtectedRoute>
-            <Board />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/profil"
-        element={
-          <ProtectedRoute>
-            <Profile />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/takimlar"
-        element={
-          <ProtectedRoute>
-            <Teams />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/takimlar/:id"
-        element={
-          <ProtectedRoute>
-            <TeamDetail />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/admin"
-        element={
-          <ProtectedRoute>
-            <Admin />
-          </ProtectedRoute>
-        }
-      />
+      <Route path="/" element={<Private><Projects /></Private>} />
+      <Route path="/projects/:id" element={<Private><Board /></Private>} />
+      <Route path="/profil" element={<Private><Profile /></Private>} />
+      <Route path="/takimlar" element={<Private><Teams /></Private>} />
+      <Route path="/takimlar/:id" element={<Private><TeamDetail /></Private>} />
+      <Route path="/admin" element={<Private><Admin /></Private>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/client.js";
+import Icon from "./Icon.jsx";
 import "../styles/notifications.css";
 
 export default function NotificationBell() {
@@ -85,8 +86,9 @@ export default function NotificationBell() {
         className="notif-bell"
         onClick={handleBellClick}
         title="Bildirimler"
+        aria-label="Bildirimler"
       >
-        🔔
+        <Icon name="bell" size={18} />
         {unreadCount > 0 && (
           <span className="notif-badge">
             {unreadCount > 99 ? "99+" : unreadCount}
