@@ -19,8 +19,7 @@ PROJE 1 TRELLO CLONE.pdf
 Thumbs.db
 
 # Kök dizindeki deneme / boş görseller (repoya dahil edilmiyor)
-/image.png
-/image copy.png
+/image*.png
 /PROJE 1 TRELLO CLONE_page-*.jpg
 
 # Staj defteri ve staj ile ilgili dosyalar (repoya dahil edilmiyor)
