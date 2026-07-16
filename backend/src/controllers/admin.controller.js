@@ -116,12 +116,12 @@ export const createAccount = asyncHandler(async (req, res) => {
 
 // Mevcut mail (SMTP) ayarlarini doner. Satir yoksa varsayilanla olusturur.
 export const getMailSettings = asyncHandler(async (req, res) => {
-  let setting = await prisma.mailSetting.findUnique({ where: { id: 1 } });
-  if (!setting) {
-    setting = await prisma.mailSetting.create({
-      data: { id: 1, ...MAIL_SETTING_DEFAULT },
-    });
-  }
+  // upsert: eszamanli iki istekte unique-constraint yarisini onler
+  const setting = await prisma.mailSetting.upsert({
+    where: { id: 1 },
+    update: {},
+    create: { id: 1, ...MAIL_SETTING_DEFAULT },
+  });
   res.json({ settings: publicMailSetting(setting) });
 });
 
@@ -154,6 +154,7 @@ export const testMail = asyncHandler(async (req, res) => {
         : "SMTP kapali oldugu icin test maili backend konsoluna yazildi.";
     res.json({ message, mode });
   } catch (err) {
-    throw new HttpError(400, `Mail gonderilemedi: ${err.message}`);
+    console.error("Test maili gonderilemedi:", err.message);
+    throw new HttpError(400, "Mail gonderilemedi. SMTP ayarlarini kontrol edin.");
   }
 });

@@ -113,6 +113,7 @@ model Column {
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
   tasks   Task[]
 
+  @@index([projectId])
   @@map("columns")
 }
 
@@ -131,10 +132,14 @@ model Task {
 
   column    Column          @relation(fields: [columnId], references: [id], onDelete: Cascade)
   project   Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  assignee  User?           @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  assignee  User?           @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
   labels    TaskLabel[]
   comments  Comment[]
   checklist ChecklistItem[]
+
+  @@index([columnId])
+  @@index([projectId])
+  @@index([assigneeId])
 }
 
 model Label {
@@ -146,6 +151,8 @@ model Label {
 
   project Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
   tasks   TaskLabel[]
+
+  @@index([projectId])
 }
 
 model TaskLabel {
@@ -168,6 +175,8 @@ model Comment {
 
   task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
 }
 
 model ChecklistItem {
@@ -179,6 +188,8 @@ model ChecklistItem {
   createdAt DateTime @default(now())
 
   task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
 }
 
 model Activity {
@@ -191,6 +202,8 @@ model Activity {
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
 }
 
 model Notification {
@@ -202,6 +215,8 @@ model Notification {
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
 }
 
 model AuthToken {
@@ -214,6 +229,8 @@ model AuthToken {
   createdAt DateTime  @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 // Mail (SMTP) ayarlari — tek satirlik (id=1) yapilandirma. Admin panelinden

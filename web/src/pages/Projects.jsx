@@ -7,12 +7,18 @@ import Icon from "../components/Icon.jsx";
 export default function Projects() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [name, setName] = useState("");
 
   const load = async () => {
-    const res = await api.get("/projects");
-    setProjects(res.data.projects);
-    setLoading(false);
+    try {
+      const res = await api.get("/projects");
+      setProjects(res.data.projects);
+    } catch (err) {
+      setError(err.response?.data?.message || "Projeler yüklenemedi");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -61,6 +67,8 @@ export default function Projects() {
 
         {loading ? (
           <p className="muted">Yükleniyor...</p>
+        ) : error ? (
+          <p className="error">{error}</p>
         ) : projects.length === 0 ? (
           <div className="empty-state">
             <span className="empty-icon">

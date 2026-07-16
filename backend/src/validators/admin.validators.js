@@ -2,9 +2,14 @@ import { z } from "zod";
 
 // Admin panelinden yeni hesap oluştururken gelen veriyi doğrular.
 export const createAccountSchema = z.object({
-  name: z.string().min(2, "Ad en az 2 karakter olmali"),
-  email: z.string().email("Gecerli bir e-posta girin"),
-  password: z.string().min(6, "Sifre en az 6 karakter olmali"),
+  name: z.string().trim().min(2, "Ad en az 2 karakter olmali"),
+  email: z.string().trim().toLowerCase().email("Gecerli bir e-posta girin"),
+  // Public kayit ile ayni guclu sifre kurali (tutarlilik)
+  password: z
+    .string()
+    .min(8, "Sifre en az 8 karakter olmali")
+    .regex(/[A-Za-z]/, "Sifre en az bir harf icermeli")
+    .regex(/[0-9]/, "Sifre en az bir rakam icermeli"),
   role: z.enum(["ADMIN", "USER"]).optional(),
   teamName: z.string().optional(),
 });

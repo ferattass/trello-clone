@@ -2,7 +2,13 @@ import "dotenv/config";
 import http from "http";
 import { Server } from "socket.io";
 import app from "./app.js";
+import prisma from "./lib/prisma.js";
 import { clientOrigins } from "./utils/clientOrigins.js";
+
+// Kritik env kontrolu — eksikse en basta net hata ver (sessiz cokme yerine)
+if (!process.env.JWT_SECRET) {
+  throw new Error("JWT_SECRET tanimli degil. backend/.env dosyasini kontrol et.");
+}
 
 const PORT = process.env.PORT || 4000;
 
@@ -23,6 +29,21 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, async () => {
+  try {
+    await prisma.$connect();
+  } catch (err) {
+    console.error("Veritabanina baglanilamadi:", err.message);
+  }
   console.log(`Sunucu ${PORT} portunda calisiyor`);
 });
+
+// Kapatma sinyallerinde istekleri bitir + DB baglantisini duzgun kapat
+for (const signal of ["SIGTERM", "SIGINT"]) {
+  process.on(signal, () => {
+    server.close(async () => {
+      await prisma.$disconnect();
+      process.exit(0);
+    });
+  });
+}

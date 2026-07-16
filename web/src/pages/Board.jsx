@@ -25,6 +25,7 @@ export default function Board() {
   const [members, setMembers] = useState([]);
   const [labels, setLabels] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [activeTask, setActiveTask] = useState(null);
   const [selectedTask, setSelectedTask] = useState(null);
   const [view, setView] = useState("board");
@@ -35,20 +36,25 @@ export default function Board() {
   );
 
   const load = async () => {
-    const res = await api.get(`/projects/${id}`);
-    const project = res.data.project;
-    setProjectName(project.name);
-    setColumns(project.columns);
-    setLabels(project.labels || []);
+    try {
+      const res = await api.get(`/projects/${id}`);
+      const project = res.data.project;
+      setProjectName(project.name);
+      setColumns(project.columns);
+      setLabels(project.labels || []);
 
-    // Atanabilir kisiler: proje uyeleri + (varsa) takim uyeleri, tekillestirilmis
-    const projectUsers = project.members.map((m) => m.user);
-    const teamUsers = project.team ? project.team.members.map((m) => m.user) : [];
-    const unique = Array.from(
-      new Map([...projectUsers, ...teamUsers].map((u) => [u.id, u])).values()
-    );
-    setMembers(unique);
-    setLoading(false);
+      // Atanabilir kisiler: proje uyeleri + (varsa) takim uyeleri, tekillestirilmis
+      const projectUsers = project.members.map((m) => m.user);
+      const teamUsers = project.team ? project.team.members.map((m) => m.user) : [];
+      const unique = Array.from(
+        new Map([...projectUsers, ...teamUsers].map((u) => [u.id, u])).values()
+      );
+      setMembers(unique);
+    } catch (err) {
+      setError(err.response?.data?.message || "Pano yüklenemedi");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -168,6 +174,19 @@ export default function Board() {
 
   if (loading) {
     return <div className="center">Yükleniyor...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="center">
+        <div style={{ textAlign: "center" }}>
+          <p className="muted" style={{ marginBottom: 12 }}>{error}</p>
+          <Link to="/" className="back">
+            <Icon name="arrow-left" size={16} /> Projelere dön
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   return (

@@ -96,7 +96,11 @@ export const getProject = asyncHandler(async (req, res) => {
 
 export const updateProject = asyncHandler(async (req, res) => {
   const projectId = Number(req.params.id);
-  await requireProjectMember(projectId, req.user.id);
+  const existing = await requireProjectMember(projectId, req.user.id);
+
+  if (existing.ownerId !== req.user.id) {
+    throw new HttpError(403, "Sadece proje sahibi duzenleyebilir");
+  }
 
   const { name, description } = req.body;
   const project = await prisma.project.update({
@@ -122,7 +126,11 @@ export const deleteProject = asyncHandler(async (req, res) => {
 // Projeye e-posta ile uye ekle
 export const addMember = asyncHandler(async (req, res) => {
   const projectId = Number(req.params.id);
-  await requireProjectMember(projectId, req.user.id);
+  const project = await requireProjectMember(projectId, req.user.id);
+
+  if (project.ownerId !== req.user.id) {
+    throw new HttpError(403, "Sadece proje sahibi uye ekleyebilir");
+  }
 
   const user = await prisma.user.findUnique({
     where: { email: req.body.email },

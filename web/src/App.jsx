@@ -12,6 +12,7 @@ import TeamDetail from "./pages/TeamDetail.jsx";
 import Admin from "./pages/Admin.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import Layout from "./components/Layout.jsx";
+import { useAuth } from "./context/AuthContext.jsx";
 
 // Korumali sayfalari hem giris kontrolu hem de ortak kabuk (sidebar) ile sarar.
 function Private({ children }) {
@@ -20,6 +21,13 @@ function Private({ children }) {
       <Layout>{children}</Layout>
     </ProtectedRoute>
   );
+}
+
+// Yalnizca ADMIN rolu erisebilir; degilse ana sayfaya yonlendir
+function AdminRoute({ children }) {
+  const { user } = useAuth();
+  if (user?.role !== "ADMIN") return <Navigate to="/" replace />;
+  return children;
 }
 
 export default function App() {
@@ -35,7 +43,7 @@ export default function App() {
       <Route path="/profil" element={<Private><Profile /></Private>} />
       <Route path="/takimlar" element={<Private><Teams /></Private>} />
       <Route path="/takimlar/:id" element={<Private><TeamDetail /></Private>} />
-      <Route path="/admin" element={<Private><Admin /></Private>} />
+      <Route path="/admin" element={<Private><AdminRoute><Admin /></AdminRoute></Private>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

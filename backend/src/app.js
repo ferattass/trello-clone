@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
 import { clientOrigins } from "./utils/clientOrigins.js";
 import authRoutes from "./routes/auth.routes.js";
 import projectRoutes from "./routes/project.routes.js";
@@ -16,8 +17,11 @@ import { notFound, errorHandler } from "./middleware/errorHandler.js";
 
 const app = express();
 
+// Render/Vercel gibi ters vekil arkasinda dogru IP icin (rate-limit'e gerekli)
+app.set("trust proxy", 1);
+app.use(helmet());
 app.use(cors({ origin: clientOrigins }));
-app.use(express.json());
+app.use(express.json({ limit: "1mb" }));
 
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });

@@ -23,6 +23,8 @@ function randomToken() {
 
 // Kullanici icin belirtilen turde dogrulama/sifirlama jetonu olusturur
 async function createAuthToken(userId, type, ttlMs) {
+  // Ayni kullanicinin ayni turdeki kullanilmamis eski jetonlarini gecersiz kil
+  await prisma.authToken.deleteMany({ where: { userId, type, usedAt: null } });
   const token = randomToken();
   const expiresAt = new Date(Date.now() + ttlMs);
   await prisma.authToken.create({ data: { token, type, userId, expiresAt } });
@@ -124,14 +126,11 @@ export const verifyEmail = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "Baglanti gecersiz veya suresi dolmus" });
   }
 
-  await prisma.user.update({
-    where: { id: record.userId },
-    data: { emailVerified: true },
-  });
-  await prisma.authToken.update({
-    where: { id: record.id },
-    data: { usedAt: new Date() },
-  });
+  // Ikisi tek transaction'da — biri basarisiz olursa jeton tekrar kullanilamaz
+  await prisma.$transaction([
+    prisma.user.update({ where: { id: record.userId }, data: { emailVerified: true } }),
+    prisma.authToken.update({ where: { id: record.id }, data: { usedAt: new Date() } }),
+  ]);
 
   res.json({ message: "E-posta dogrulandi" });
 });
@@ -187,14 +186,11 @@ export const resetPassword = asyncHandler(async (req, res) => {
   }
 
   const hashed = await bcrypt.hash(password, 10);
-  await prisma.user.update({
-    where: { id: record.userId },
-    data: { password: hashed },
-  });
-  await prisma.authToken.update({
-    where: { id: record.id },
-    data: { usedAt: new Date() },
-  });
+  // Ikisi tek transaction'da — biri basarisiz olursa jeton tekrar kullanilamaz
+  await prisma.$transaction([
+    prisma.user.update({ where: { id: record.userId }, data: { password: hashed } }),
+    prisma.authToken.update({ where: { id: record.id }, data: { usedAt: new Date() } }),
+  ]);
 
   res.json({ message: "Sifre guncellendi" });
 });

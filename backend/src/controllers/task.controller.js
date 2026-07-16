@@ -93,7 +93,7 @@ export const updateTask = asyncHandler(async (req, res) => {
   const task = await getTaskWithAccess(taskId, req.user.id);
 
   const { title, description, assigneeId, priority, dueDate } = req.body;
-  if (assigneeId) {
+  if (assigneeId != null) {
     await assertAssigneeIsMember(task.projectId, assigneeId);
   }
 

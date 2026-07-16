@@ -40,7 +40,10 @@ export default function TaskCard({ task, onOpen }) {
       {...attributes}
       {...listeners}
       className="task-card"
-      onClick={() => onOpen(task)}
+      onClick={() => {
+        // Surukleme bittiginde click tetiklenmesin (yanlislikla modal acmasin)
+        if (!isDragging) onOpen(task);
+      }}
     >
       {task.labels && task.labels.length > 0 && (
         <div className="card-labels">

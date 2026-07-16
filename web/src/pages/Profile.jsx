@@ -35,6 +35,15 @@ export default function Profile() {
   const savePassword = async (e) => {
     e.preventDefault();
     setPwMsg(null);
+    const strong =
+      newPassword.length >= 8 && /[A-Za-z]/.test(newPassword) && /[0-9]/.test(newPassword);
+    if (!strong) {
+      setPwMsg({
+        type: "error",
+        text: "Şifre en az 8 karakter olmalı, harf ve rakam içermeli",
+      });
+      return;
+    }
     if (newPassword !== confirm) {
       setPwMsg({ type: "error", text: "Yeni şifreler eşleşmiyor" });
       return;
@@ -100,7 +109,7 @@ export default function Profile() {
             type="password"
             value={newPassword}
             onChange={(e) => setNew(e.target.value)}
-            placeholder="En az 6 karakter"
+            placeholder="En az 8 karakter, harf ve rakam"
             required
           />
 

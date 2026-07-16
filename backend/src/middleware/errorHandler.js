@@ -7,5 +7,7 @@ export function errorHandler(err, req, res, next) {
   if (status >= 500) {
     console.error(err);
   }
-  res.status(status).json({ message: err.message || "Sunucu hatasi" });
+  // 5xx'te ic hata detayini (Prisma/DB mesajlari vb.) istemciye sizdirma
+  const message = status < 500 ? err.message || "Istek islenemedi" : "Sunucu hatasi";
+  res.status(status).json({ message });
 }
