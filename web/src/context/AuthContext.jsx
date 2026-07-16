@@ -41,9 +41,36 @@ export function AuthProvider({ children }) {
   // Profil guncellenince (orn. ad degisince) kullaniciyi tazele
   const updateUser = (updated) => setUser(updated);
 
+  // Sifremi unuttum: maile sifirlama baglantisi istenir
+  const forgotPassword = (email) =>
+    api.post("/auth/forgot-password", { email }).then((res) => res.data);
+
+  // Maildeki jeton ile yeni sifre belirlenir
+  const resetPassword = (token, password) =>
+    api.post("/auth/reset-password", { token, password }).then((res) => res.data);
+
+  // Maildeki jeton ile e-posta dogrulanir
+  const verifyEmail = (token) =>
+    api.post("/auth/verify-email", { token }).then((res) => res.data);
+
+  // Dogrulama maili tekrar istenir
+  const resendVerification = (email) =>
+    api.post("/auth/resend-verification", { email }).then((res) => res.data);
+
   return (
     <AuthContext.Provider
-      value={{ user, loading, login, register, logout, updateUser }}
+      value={{
+        user,
+        loading,
+        login,
+        register,
+        logout,
+        updateUser,
+        forgotPassword,
+        resetPassword,
+        verifyEmail,
+        resendVerification,
+      }}
     >
       {children}
     </AuthContext.Provider>

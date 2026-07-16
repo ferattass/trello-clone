@@ -1,4 +1,4 @@
-# Akıllı Görev & Proje Yönetim Sistemi (Trello Clone)
+# Flowboard — Akıllı Görev & Proje Yönetim Sistemi (Trello Clone)
 
 Ekiplerin proje açıp görev oluşturduğu, görevleri **sürükle-bırak** ile
 "To Do / Doing / Done" sütunları arasında taşıyabildiği full-stack bir iş

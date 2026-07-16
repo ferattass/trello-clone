@@ -1,15 +1,19 @@
 {
   "name": "trelloclone-backend",
   "version": "1.0.0",
-  "description": "Akilli Gorev & Proje Yonetim Sistemi - REST API",
+  "description": "Flowboard - Gorev & Proje Yonetim Sistemi (REST API)",
   "type": "module",
   "main": "src/index.js",
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
+    "seed": "node prisma/seed.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   },
   "dependencies": {
     "@prisma/client": "^6.2.1",
@@ -18,6 +22,7 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^9.0.3",
     "socket.io": "^4.8.3",
     "zod": "^3.24.1"
   },

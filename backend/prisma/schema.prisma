@@ -24,12 +24,18 @@ enum TeamRole {
   MEMBER
 }
 
+enum TokenType {
+  EMAIL_VERIFY
+  PASSWORD_RESET
+}
+
 model User {
   id        Int      @id @default(autoincrement())
   name      String
   email     String   @unique
   password  String
   role      Role     @default(USER)
+  emailVerified Boolean @default(false)
   createdAt DateTime @default(now())
 
   ownedProjects   Project[]       @relation("ProjectOwner")
@@ -40,6 +46,7 @@ model User {
   comments        Comment[]
   notifications   Notification[]
   activities      Activity[]
+  authTokens      AuthToken[]
 }
 
 model Team {
@@ -195,4 +202,31 @@ model Notification {
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AuthToken {
+  id        Int       @id @default(autoincrement())
+  token     String    @unique
+  type      TokenType
+  userId    Int
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Mail (SMTP) ayarlari — tek satirlik (id=1) yapilandirma. Admin panelinden
+// duzenlenir; enabled+host doluysa mailler gercekten gonderilir.
+model MailSetting {
+  id        Int      @id @default(1)
+  enabled   Boolean  @default(false)
+  host      String   @default("")
+  port      Int      @default(587)
+  secure    Boolean  @default(false)
+  username  String   @default("")
+  password  String   @default("")
+  fromName  String   @default("Flowboard")
+  fromEmail String   @default("no-reply@flowboard.local")
+  updatedAt DateTime @updatedAt
 }

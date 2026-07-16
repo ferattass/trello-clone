@@ -3,6 +3,25 @@ import bcrypt from "bcryptjs";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { HttpError } from "../utils/httpError.js";
 import { notify } from "../utils/notify.js";
+import { sendTestMail } from "../utils/mail.js";
+
+// Mail ayari satiri yoksa kullanilacak varsayilanlar
+const MAIL_SETTING_DEFAULT = {
+  enabled: false,
+  host: "",
+  port: 587,
+  secure: false,
+  username: "",
+  password: "",
+  fromName: "Flowboard",
+  fromEmail: "no-reply@flowboard.local",
+};
+
+// Parolayi disari sizdirmadan ayarlari donusturur (parola yerine var/yok bilgisi)
+const publicMailSetting = (setting) => {
+  const { password, ...rest } = setting;
+  return { ...rest, hasPassword: Boolean(password) };
+};
 
 // Genel istatistikleri döner: kullanıcı, takım, proje, görev sayıları.
 export const getStats = asyncHandler(async (req, res) => {
@@ -93,4 +112,48 @@ export const createAccount = asyncHandler(async (req, res) => {
   if (team) response.team = { id: team.id, name: team.name };
 
   res.status(201).json(response);
+});
+
+// Mevcut mail (SMTP) ayarlarini doner. Satir yoksa varsayilanla olusturur.
+export const getMailSettings = asyncHandler(async (req, res) => {
+  let setting = await prisma.mailSetting.findUnique({ where: { id: 1 } });
+  if (!setting) {
+    setting = await prisma.mailSetting.create({
+      data: { id: 1, ...MAIL_SETTING_DEFAULT },
+    });
+  }
+  res.json({ settings: publicMailSetting(setting) });
+});
+
+// Mail ayarlarini gunceller. Parola sadece yeni bir deger girildiyse degisir.
+export const updateMailSettings = asyncHandler(async (req, res) => {
+  const { enabled, host, port, secure, username, password, fromName, fromEmail } =
+    req.body;
+
+  const data = { enabled, host, port, secure, username, fromName, fromEmail };
+  if (typeof password === "string" && password.length > 0) {
+    data.password = password;
+  }
+
+  const setting = await prisma.mailSetting.upsert({
+    where: { id: 1 },
+    update: data,
+    create: { id: 1, ...MAIL_SETTING_DEFAULT, ...data },
+  });
+
+  res.json({ settings: publicMailSetting(setting) });
+});
+
+// Kayitli ayarlarla bir test maili gonderir.
+export const testMail = asyncHandler(async (req, res) => {
+  try {
+    const mode = await sendTestMail(req.body.to);
+    const message =
+      mode === "smtp"
+        ? "Test maili SMTP uzerinden gonderildi."
+        : "SMTP kapali oldugu icin test maili backend konsoluna yazildi.";
+    res.json({ message, mode });
+  } catch (err) {
+    throw new HttpError(400, `Mail gonderilemedi: ${err.message}`);
+  }
 });

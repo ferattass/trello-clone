@@ -1,14 +1,33 @@
+import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import prisma from "../lib/prisma.js";
 import { signToken } from "../utils/jwt.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { sendVerificationMail, sendResetMail } from "../utils/mail.js";
+
+const VERIFY_TTL_MS = 24 * 60 * 60 * 1000; // 24 saat
+const RESET_TTL_MS = 60 * 60 * 1000; // 1 saat
 
 const publicUser = (user) => ({
   id: user.id,
   name: user.name,
   email: user.email,
   role: user.role,
+  emailVerified: user.emailVerified,
 });
+
+// Rastgele, tahmin edilemez bir jeton uretir
+function randomToken() {
+  return crypto.randomBytes(32).toString("hex");
+}
+
+// Kullanici icin belirtilen turde dogrulama/sifirlama jetonu olusturur
+async function createAuthToken(userId, type, ttlMs) {
+  const token = randomToken();
+  const expiresAt = new Date(Date.now() + ttlMs);
+  await prisma.authToken.create({ data: { token, type, userId, expiresAt } });
+  return token;
+}
 
 export const register = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
@@ -22,6 +41,14 @@ export const register = asyncHandler(async (req, res) => {
   const user = await prisma.user.create({
     data: { name, email, password: hashed },
   });
+
+  // Kayittan sonra dogrulama maili gonder (mail hatasi kaydi engellemesin)
+  try {
+    const token = await createAuthToken(user.id, "EMAIL_VERIFY", VERIFY_TTL_MS);
+    await sendVerificationMail(user, token);
+  } catch (err) {
+    console.error("Dogrulama maili gonderilemedi:", err.message);
+  }
 
   const token = signToken({ id: user.id, role: user.role });
   res.status(201).json({ user: publicUser(user), token });
@@ -78,6 +105,95 @@ export const changePassword = asyncHandler(async (req, res) => {
   await prisma.user.update({
     where: { id: user.id },
     data: { password: hashed },
+  });
+
+  res.json({ message: "Sifre guncellendi" });
+});
+
+// E-posta dogrulama: maildeki jeton ile hesabi aktif eder
+export const verifyEmail = asyncHandler(async (req, res) => {
+  const { token } = req.body;
+
+  const record = await prisma.authToken.findUnique({ where: { token } });
+  if (
+    !record ||
+    record.type !== "EMAIL_VERIFY" ||
+    record.usedAt ||
+    record.expiresAt < new Date()
+  ) {
+    return res.status(400).json({ message: "Baglanti gecersiz veya suresi dolmus" });
+  }
+
+  await prisma.user.update({
+    where: { id: record.userId },
+    data: { emailVerified: true },
+  });
+  await prisma.authToken.update({
+    where: { id: record.id },
+    data: { usedAt: new Date() },
+  });
+
+  res.json({ message: "E-posta dogrulandi" });
+});
+
+// Dogrulama mailini tekrar gonder
+export const resendVerification = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (user && !user.emailVerified) {
+    try {
+      const token = await createAuthToken(user.id, "EMAIL_VERIFY", VERIFY_TTL_MS);
+      await sendVerificationMail(user, token);
+    } catch (err) {
+      console.error("Dogrulama maili gonderilemedi:", err.message);
+    }
+  }
+
+  // Hesap olmasa/dogrulanmis olsa bile ayni yaniti don
+  res.json({ message: "Dogrulama baglantisi gonderildi" });
+});
+
+// Sifremi unuttum: maile sifirlama baglantisi gonderir
+export const forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (user) {
+    try {
+      const token = await createAuthToken(user.id, "PASSWORD_RESET", RESET_TTL_MS);
+      await sendResetMail(user, token);
+    } catch (err) {
+      console.error("Sifirlama maili gonderilemedi:", err.message);
+    }
+  }
+
+  // Guvenlik: e-posta kayitli olmasa bile ayni yaniti don
+  res.json({ message: "Sifirlama baglantisi gonderildi" });
+});
+
+// Sifre sifirlama: maildeki jeton ile yeni sifre belirler
+export const resetPassword = asyncHandler(async (req, res) => {
+  const { token, password } = req.body;
+
+  const record = await prisma.authToken.findUnique({ where: { token } });
+  if (
+    !record ||
+    record.type !== "PASSWORD_RESET" ||
+    record.usedAt ||
+    record.expiresAt < new Date()
+  ) {
+    return res.status(400).json({ message: "Baglanti gecersiz veya suresi dolmus" });
+  }
+
+  const hashed = await bcrypt.hash(password, 10);
+  await prisma.user.update({
+    where: { id: record.userId },
+    data: { password: hashed },
+  });
+  await prisma.authToken.update({
+    where: { id: record.id },
+    data: { usedAt: new Date() },
   });
 
   res.json({ message: "Sifre guncellendi" });

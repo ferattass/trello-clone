@@ -20,8 +20,8 @@ export default function Sidebar() {
     <aside className="sidebar">
       <div className="sidebar-head">
         <div className="workspace">
-          <span className="workspace-badge">GY</span>
-          <span className="workspace-name">Görev Yönetimi</span>
+          <span className="workspace-badge">FB</span>
+          <span className="workspace-name">Flowboard</span>
         </div>
       </div>
 

@@ -81,7 +81,7 @@ export const createTask = asyncHandler(async (req, res) => {
 
   await logActivity(column.projectId, req.user.id, `"${title}" gorevini olusturdu`, task.id);
   if (assigneeId && assigneeId !== req.user.id) {
-    await notify(assigneeId, `Size bir gorev atandi: ${title}`, `/projects/${column.projectId}`);
+    await notify(assigneeId, `Size bir gorev atandi: ${title}`, `/projects/${column.projectId}`, { sendEmail: true });
   }
 
   emitBoardUpdate(req, column.projectId);
@@ -105,7 +105,7 @@ export const updateTask = asyncHandler(async (req, res) => {
 
   // Yeni biri atandiysa ona bildirim gonder
   if (assigneeId && assigneeId !== task.assigneeId && assigneeId !== req.user.id) {
-    await notify(assigneeId, `Size bir gorev atandi: ${updated.title}`, `/projects/${task.projectId}`);
+    await notify(assigneeId, `Size bir gorev atandi: ${updated.title}`, `/projects/${task.projectId}`, { sendEmail: true });
   }
 
   emitBoardUpdate(req, task.projectId);
