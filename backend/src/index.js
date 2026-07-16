@@ -2,12 +2,13 @@ import "dotenv/config";
 import http from "http";
 import { Server } from "socket.io";
 import app from "./app.js";
+import { clientOrigins } from "./utils/clientOrigins.js";
 
 const PORT = process.env.PORT || 4000;
 
 // Express uygulamasini HTTP sunucusuna sarip Socket.io'yu ekliyoruz
 const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: "*" } });
+const io = new Server(server, { cors: { origin: clientOrigins } });
 
 // Controller'lardan erisebilmek icin io'yu app'e bagla
 app.set("io", io);
